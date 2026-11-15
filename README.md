@@ -41,24 +41,22 @@ Works completely offline in your browser with **zero server uploads**, zero data
 
 Since Image Studio is built with **pure static HTML, CSS, and JS**, hosting takes less than 30 seconds:
 
-### Option 1: GitHub Pages (1-Click)
-1. Fork or push this repository to your GitHub account.
-2. In the repository settings, go to **Settings** ➔ **Pages**.
-3. Under **Build and deployment**, select **Deploy from a branch**.
-4. Choose Branch: `main`, Folder: `/(root)`, and click **Save**.
-5. Your site is live instantly!
-
-### Option 2: Download ZIP & Host Anywhere
-1. Click **Code** ➔ **Download ZIP** on GitHub.
+### Option 1: Download ZIP & Host on your Server
+1. Click **Code** ➔ **Download ZIP** on GitHub (or use the ZIP link in the repository).
 2. Extract the files on your computer.
-3. Upload the extracted folder directly to:
-   - **Cloudflare Pages** (Direct Upload)
-   - **Netlify Drop** (Drag & Drop)
+3. Upload the extracted folder directly to any host:
    - **cPanel / Apache / Nginx** (`public_html/`)
-   - **Hostinger / GoDaddy / Firebase Hosting**
+   - **Hostinger / GoDaddy / Bluehost**
+   - **Cloudflare Pages / Netlify / Vercel** (Drag & Drop folder)
+4. Your website is immediately functional with zero build configuration!
 
-### Option 3: Local Offline Usage
-Double-click `index.html` to open it in Chrome, Brave, Edge, or Firefox. No web server required!
+### Option 2: Local Offline Usage
+Double-click `index.html` to open it directly in Chrome, Brave, Edge, or Firefox. Works 100% offline without needing a web server or internet connection.
+
+### Option 3: Optional GitHub Pages
+If you ever want to host directly on GitHub Pages in the future:
+1. Go to **Settings** ➔ **Pages** in this repository.
+2. Select **Deploy from a branch** ➔ Branch: `main`, Folder: `/(root)`.
 
 ---
 

@@ -2,37 +2,70 @@
    🌟 WORKSPACE, UPLOAD, ROTATION, SWAP & CROP GRID ENGINE
    ======================================================== */
 function triggerFileInput(idx) {
-    document.getElementById("file" + idx).click();
+    const fileEl = document.getElementById("file" + idx);
+    if (fileEl) fileEl.click();
 }
 
 function setupDragDropPasteEngine(idx) {
     const box = document.getElementById("imgBox" + idx);
+    if (!box) return;
     box.addEventListener('dragover', (e) => { e.preventDefault(); box.classList.add('dragover'); });
     box.addEventListener('dragleave', () => box.classList.remove('dragover'));
     box.addEventListener('drop', (e) => {
         e.preventDefault(); box.classList.remove('dragover');
-        if(e.dataTransfer.files.length > 0) {
+        if (e.dataTransfer && e.dataTransfer.files.length > 0) {
             document.getElementById("file" + idx).files = e.dataTransfer.files;
             processLoadedFileObject(e.dataTransfer.files[0], idx);
         }
     });
 }
 
-document.getElementById("file1").addEventListener("change", e => handleFileSelect(e, 1));
-document.getElementById("file2").addEventListener("change", e => handleFileSelect(e, 2));
+// Global Clipboard Paste Support (Ctrl+V anywhere on page)
+window.addEventListener('paste', (e) => {
+    // Only process if user is in Image Studio section and not typing in an input
+    const sectionImages = document.getElementById("sectionImages");
+    if (!sectionImages || sectionImages.style.display === "none") return;
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+            const file = items[i].getAsFile();
+            if (file) {
+                let targetIdx = 1;
+                if (appMode === 'merger' && images[1] && !images[2]) targetIdx = 2;
+                processLoadedFileObject(file, targetIdx);
+                break;
+            }
+        }
+    }
+});
+
+const file1El = document.getElementById("file1");
+const file2El = document.getElementById("file2");
+if (file1El) file1El.addEventListener("change", e => handleFileSelect(e, 1));
+if (file2El) file2El.addEventListener("change", e => handleFileSelect(e, 2));
 
 function handleFileSelect(e, idx) {
     const file = e.target.files[0];
-    if(file) processLoadedFileObject(file, idx);
+    if (file) processLoadedFileObject(file, idx);
 }
 
 function processLoadedFileObject(file, idx) {
-    baseFileNames[idx] = file.name ? file.name.substring(0, file.name.lastIndexOf('.')) : "photo_layer";
+    if (file.name) {
+        const dotIdx = file.name.lastIndexOf('.');
+        baseFileNames[idx] = dotIdx !== -1 ? file.name.substring(0, dotIdx) : file.name;
+    } else {
+        baseFileNames[idx] = `photo_${idx}`;
+    }
+
     const img = new Image();
     img.onload = () => {
         images[idx] = img;
         rotations[idx] = 0;
-        document.getElementById("wmBtn" + idx).style.display = "inline-block";
+        const wmBtn = document.getElementById("wmBtn" + idx);
+        if (wmBtn) wmBtn.style.display = "inline-block";
         initWorkspace(idx);
     };
     img.src = URL.createObjectURL(file);
@@ -49,7 +82,10 @@ function triggerFullCropShortcut(event, idx) {
     if (!images[idx]) return;
     const canvas = document.getElementById("canvas" + idx);
     grids[idx].x = 0; grids[idx].y = 0; grids[idx].w = canvas.width; grids[idx].h = canvas.height;
-    window.requestAnimationFrame(() => { updateGridUI(idx); mergeAndPreview(); });
+    window.requestAnimationFrame(() => { 
+        updateGridUI(idx); 
+        if (finalMergedCanvas) mergeAndPreview(); 
+    });
 }
 
 function initWorkspace(idx) {
@@ -76,7 +112,8 @@ function initWorkspace(idx) {
     wrapper.style.display = "block";
     gridEl.style.display = "block";
 
-    if (document.getElementById("globalAutoFitCheck").checked) {
+    const autoFitCheck = document.getElementById("globalAutoFitCheck");
+    if (autoFitCheck && autoFitCheck.checked) {
         grids[idx].x = 0; grids[idx].y = 0; grids[idx].w = width; grids[idx].h = height;
     } else {
         grids[idx].w = Math.round(width * 0.6);
@@ -125,9 +162,9 @@ function swapImages() {
 
     [1, 2].forEach(i => {
         const triggerBtn = document.getElementById("wmBtn" + i);
-        if(images[i]) {
+        if (images[i]) {
             triggerBtn.style.display = "inline-block";
-            if(watermarkConfigs[i].active) {
+            if (watermarkConfigs[i].active) {
                 triggerBtn.innerText = "📝 Edit Watermark (Active)";
                 triggerBtn.style.background = "linear-gradient(135deg, #10b981, #059669)";
             } else {
@@ -158,7 +195,7 @@ function updateGridUI(idx) {
     gridEl.style.height = (grids[idx].h * scaleY) + "%";
     
     const shadowBox = document.getElementById("shadowBox" + idx);
-    if(shadowBox) {
+    if (shadowBox) {
         shadowBox.style.left = gridEl.style.left;
         shadowBox.style.top = gridEl.style.top;
         shadowBox.style.width = gridEl.style.width;
@@ -169,21 +206,25 @@ function updateGridUI(idx) {
 function attachInteractionListeners(idx) {
     const wrapperNode = document.getElementById("canvasContainer" + idx);
     const gridEl = document.getElementById("grid" + idx); 
-    gridEl.onmousedown = null; gridEl.ontouchstart = null;
-    
-    wrapperNode.addEventListener('pointerup', (e) => {
+    if (!wrapperNode || !gridEl) return;
+
+    // Use direct property handler to prevent accumulating duplicate listeners
+    wrapperNode.onpointerup = (e) => {
         const currentTime = new Date().getTime();
         const tapLength = currentTime - lastTapMap[idx];
         if (tapLength < 300 && tapLength > 0) {
             e.preventDefault(); e.stopPropagation();
             const canvas = document.getElementById("canvas" + idx);
             grids[idx].x = 0; grids[idx].y = 0; grids[idx].w = canvas.width; grids[idx].h = canvas.height;
-            window.requestAnimationFrame(() => { updateGridUI(idx); mergeAndPreview(); });
+            window.requestAnimationFrame(() => { 
+                updateGridUI(idx); 
+                if (finalMergedCanvas) mergeAndPreview(); 
+            });
             lastTapMap[idx] = 0;
             return;
         }
         lastTapMap[idx] = currentTime;
-    });
+    };
 
     const startHandler = (e) => {
         const touch = e.touches ? e.touches[0] : e;
@@ -202,8 +243,8 @@ function attachInteractionListeners(idx) {
         e.stopPropagation();
     };
 
-    gridEl.addEventListener('mousedown', startHandler, { passive: false });
-    gridEl.addEventListener('touchstart', startHandler, { passive: false });
+    gridEl.onmousedown = startHandler;
+    gridEl.ontouchstart = startHandler;
 }
 
 const moveHandler = (e) => {
@@ -242,7 +283,7 @@ function updateGridPositions(e) {
     } else if (activeSession.type === "resize") {
         const handle = activeSession.handle;
         let nx = init.x; let ny = init.y; let nw = init.w; let nh = init.h;
-        if(!isAspectLocked) {
+        if (!isAspectLocked) {
             if (handle === "br") { nw = Math.max(30, Math.min(init.w + dx, canvas.width - init.x)); nh = Math.max(30, Math.min(init.h + dy, canvas.height - init.y)); }
             else if (handle === "bl") { let maxW = init.x + init.w; nx = Math.max(0, Math.min(init.x + dx, maxW - 30)); nw = maxW - nx; nh = Math.max(30, Math.min(init.h + dy, canvas.height - init.y)); }
             else if (handle === "tr") { nw = Math.max(30, Math.min(init.w + dx, canvas.width - init.x)); let maxH = init.y + init.h; ny = Math.max(0, Math.min(init.y + dy, maxH - 30)); nh = maxH - ny; }
@@ -290,6 +331,9 @@ function updateGridPositions(e) {
 }
 
 const endHandler = () => {
+    if (activeSession.idx && finalMergedCanvas) {
+        mergeAndPreview();
+    }
     activeSession.idx = null;
     activeSession.type = null;
 };

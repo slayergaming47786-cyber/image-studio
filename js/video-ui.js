@@ -9,6 +9,7 @@ let currentCompressionResult = null;
 let activePreset = 'auto'; // 'auto' | 'ultra' | 'balanced' | 'high' | 'target-size' | 'custom'
 let activeController = null;
 let exportCounter = 1;
+let lastResultUrl = null;
 
 // Custom Settings State
 let customConfig = {
@@ -103,8 +104,14 @@ function initVideoDropzone() {
 
     dropzone.addEventListener('drop', (e) => {
         const files = e.dataTransfer?.files;
-        if (files && files.length > 0 && files[0].type.startsWith('video/')) {
-            handleVideoSelected(files[0]);
+        if (files && files.length > 0) {
+            const f = files[0];
+            const isVideo = (f.type && f.type.startsWith('video/')) || /\.(mp4|mov|webm|mkv|avi|m4v|3gp|ts)$/i.test(f.name);
+            if (isVideo) {
+                handleVideoSelected(f);
+            } else {
+                alert("Please drop a valid video file (MP4, MOV, WebM, MKV, etc.)");
+            }
         }
     });
 
@@ -194,11 +201,17 @@ function resetVideoSelection() {
     currentVideoFile = null;
     currentVideoMeta = null;
     currentCompressionResult = null;
-    document.getElementById("videoDropzone").style.display = "block";
+    if (lastResultUrl) {
+        try { URL.revokeObjectURL(lastResultUrl); } catch(e){}
+        lastResultUrl = null;
+    }
+    const dropzone = document.getElementById("videoDropzone");
+    if (dropzone) dropzone.style.display = "block";
     document.getElementById("videoInfoCard").style.display = "none";
     document.getElementById("videoConfigBlock").style.display = "none";
     document.getElementById("videoResultCard").style.display = "none";
-    document.getElementById("videoFileInput").value = "";
+    const fileInput = document.getElementById("videoFileInput");
+    if (fileInput) fileInput.value = "";
 }
 
 /* ----------------------------------------------------
@@ -397,6 +410,10 @@ function showVideoResult(result) {
     const resultCard = document.getElementById("videoResultCard");
     const player = document.getElementById("videoResultPlayer");
 
+    if (lastResultUrl) {
+        try { URL.revokeObjectURL(lastResultUrl); } catch(e){}
+    }
+    lastResultUrl = result.url;
     player.src = result.url;
 
     document.getElementById("resOrigSize").textContent = window.VideoCompressorEngine.formatBytes(currentVideoMeta.size);

@@ -4,7 +4,7 @@
 let appMode = 'merger'; 
 let images = { 1: null, 2: null };
 let rotations = { 1: 0, 2: 0 };
-let baseFileNames = { 1: "studio_export", 2: "studio_export" }; 
+let baseFileNames = { 1: "photo_1", 2: "photo_2" }; 
 let finalMergedCanvas = null;
 let currentPreviewUrl = null;
 let selectedBorderColor = "#ffffff";
@@ -35,6 +35,16 @@ let userPreferences = { savedFormat: "ask" };
 let lastTapMap = { 1: 0, 2: 0 };
 
 window.addEventListener("DOMContentLoaded", () => {
+    // Restore persistent user format preference if saved
+    try {
+        const saved = localStorage.getItem("image_studio_saved_format");
+        if (saved) {
+            userPreferences.savedFormat = saved;
+            const defSelect = document.getElementById("defaultFormat");
+            if (defSelect) defSelect.value = saved;
+        }
+    } catch(e) {}
+
     buildBorderSwatches("borderSwatches");
     buildModalColorSwatches();
     setupDragDropPasteEngine(1);

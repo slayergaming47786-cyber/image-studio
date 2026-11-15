@@ -1,11 +1,18 @@
 /* ========================================================
    🌟 MERGER ENGINE, EXPORT FORMAT FLOW & PINPOINT COMPRESSOR
    ======================================================== */
+let imageExportCounter = 1;
+
 function generateOutputFileName() {
-    let base = "studio_export";
-    if (appMode === 'single' && images[1]) base = baseFileNames[1];
-    else if (appMode === 'merger' && images[1]) base = `${baseFileNames[1]}_merged`;
-    return `${base}_${Math.floor(100 + Math.random() * 900)}`;
+    let base = "image_export";
+    if (appMode === 'single' && images[1]) {
+        base = baseFileNames[1];
+    } else if (appMode === 'merger' && images[1]) {
+        base = `${baseFileNames[1]}_merged`;
+    }
+    const filename = `${base}-${imageExportCounter}`;
+    imageExportCounter++;
+    return filename;
 }
 
 function mergeAndPreview() {
@@ -64,9 +71,9 @@ function mergeAndPreview() {
     }
 
     finalMergedCanvas.toBlob(blob => {
-        if(!blob) return;
+        if (!blob) return;
         const sizeKB = (blob.size / 1024).toFixed(2);
-        document.getElementById("infoStats").innerHTML = `<strong>Final Output Canvas:</strong> ${finalMergedCanvas.width} x ${finalMergedCanvas.height} px<br><strong>Weight:</strong> ${sizeKB} KB`;
+        document.getElementById("infoStats").innerHTML = `<strong>Final Output Canvas:</strong> ${finalMergedCanvas.width} × ${finalMergedCanvas.height} px<br><strong>Weight:</strong> ${sizeKB} KB`;
         if (currentPreviewUrl) URL.revokeObjectURL(currentPreviewUrl);
         currentPreviewUrl = URL.createObjectURL(blob);
         document.getElementById("previewImg").src = currentPreviewUrl;
@@ -78,15 +85,22 @@ function mergeAndPreview() {
 function processDownloadFlow(isCompressionRequest) {
     if (!finalMergedCanvas) return;
     pendingCompression = isCompressionRequest;
-    if (userPreferences.savedFormat !== "ask") executeTargetExport(userPreferences.savedFormat);
-    else document.getElementById("formatModal").style.display = "flex";
+    if (userPreferences.savedFormat !== "ask") {
+        executeTargetExport(userPreferences.savedFormat);
+    } else {
+        document.getElementById("formatModal").style.display = "flex";
+    }
 }
 
 function confirmFormatModalSelection() {
     const selectedFormat = document.getElementById("modalFormatChoice").value;
     if (document.getElementById("keepChoiceCheck").checked) {
         userPreferences.savedFormat = selectedFormat;
-        document.getElementById("defaultFormat").value = selectedFormat;
+        const defSelect = document.getElementById("defaultFormat");
+        if (defSelect) defSelect.value = selectedFormat;
+        try {
+            localStorage.setItem("image_studio_saved_format", selectedFormat);
+        } catch(e) {}
     }
     document.getElementById("formatModal").style.display = "none";
     executeTargetExport(selectedFormat);
@@ -94,10 +108,13 @@ function confirmFormatModalSelection() {
 
 function executeTargetExport(format) {
     const filename = generateOutputFileName();
-    const ext = format.split("/")[1];
-    if (pendingCompression) compressMergedFlow(format, filename);
-    else {
-        finalMergedCanvas.toBlob(blob => triggerDownload(URL.createObjectURL(blob), `${filename}.${ext}`), format, 0.98);
+    const ext = format.split("/")[1] === "jpeg" ? "jpg" : format.split("/")[1];
+    if (pendingCompression) {
+        compressMergedFlow(format, filename);
+    } else {
+        finalMergedCanvas.toBlob(blob => {
+            if (blob) triggerDownload(URL.createObjectURL(blob), `${filename}.${ext}`);
+        }, format, 0.98);
     }
 }
 
@@ -105,7 +122,7 @@ function executeTargetExport(format) {
 async function compressMergedFlow(exportFormat, filename) {
     const inputVal = parseFloat(document.getElementById("targetSize").value);
     const unit = document.getElementById("targetUnit").value;
-    const ext = exportFormat.split("/")[1];
+    const ext = exportFormat.split("/")[1] === "jpeg" ? "jpg" : exportFormat.split("/")[1];
     if (!inputVal || inputVal <= 0) return alert("Please enter a valid target size!");
 
     const targetBytes = unit === "MB" ? inputVal * 1024 * 1024 : inputVal * 1024;
@@ -120,17 +137,23 @@ async function compressMergedFlow(exportFormat, filename) {
         compCanvas.width = Math.round(finalMergedCanvas.width * scale);
         compCanvas.height = Math.round(finalMergedCanvas.height * scale);
         
-        // Render pre-processed merged canvas safely avoiding double text burns
         compCtx.drawImage(finalMergedCanvas, 0, 0, compCanvas.width, compCanvas.height);
         
         let minQ = 0.01; let maxQ = 1.0; let localBestBlob = null;
         for (let i = 0; i < 12; i++) {
             const q = (minQ + maxQ) / 2;
             const blob = await new Promise(res => compCanvas.toBlob(res, exportFormat, q));
-            if (blob.size > targetBytes) maxQ = q;
-            else { minQ = q; localBestBlob = blob; }
+            if (blob.size > targetBytes) {
+                maxQ = q;
+            } else { 
+                minQ = q; 
+                localBestBlob = blob; 
+            }
         }
-        if (localBestBlob) { bestBlob = localBestBlob; break; }
+        if (localBestBlob) { 
+            bestBlob = localBestBlob; 
+            break; 
+        }
         scale -= 0.05;
     }
 
@@ -138,19 +161,10 @@ async function compressMergedFlow(exportFormat, filename) {
         bestBlob = await new Promise(res => finalMergedCanvas.toBlob(res, exportFormat, 0.01));
     }
 
-    let finalPayloadBlob = bestBlob;
-    if (bestBlob.size < targetBytes) {
-        const remainingBytes = Math.floor(targetBytes - bestBlob.size);
-        if (remainingBytes > 0) {
-            const paddingBuffer = new Uint8Array(remainingBytes);
-            finalPayloadBlob = new Blob([bestBlob, paddingBuffer], { type: exportFormat });
-        }
-    }
-
-    if (finalPayloadBlob) {
-        const resultKB = (finalPayloadBlob.size / 1024).toFixed(2);
+    if (bestBlob) {
+        const resultKB = (bestBlob.size / 1024).toFixed(2);
         statsContainer.innerHTML = `<strong>Pinpoint Size Success! Target Matched!</strong><br>Calculated Size: ${resultKB} KB / Format: ${ext.toUpperCase()}`;
-        const finalUrl = URL.createObjectURL(finalPayloadBlob);
+        const finalUrl = URL.createObjectURL(bestBlob);
         document.getElementById("previewImg").src = finalUrl;
         const compBtn = document.getElementById("compressedDownloadBtn");
         compBtn.style.display = "block";
@@ -162,5 +176,7 @@ function triggerDownload(url, filename) {
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
 }
