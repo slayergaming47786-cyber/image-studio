@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Image Studio • Professional Image & Video Compressor</title>
+
+<!-- Modular CSS Stylesheets -->
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/controls.css">
+<link rel="stylesheet" href="css/workspace.css">
+<link rel="stylesheet" href="css/modals-preview.css">
+<link rel="stylesheet" href="css/video.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Top Suite Brand Header -->
+    <div style="text-align: center; margin-bottom: 18px;">
+        <h1 style="margin: 0 0 4px 0; font-size: 1.85rem; font-weight: 900; background: linear-gradient(135deg, #ffffff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 4px 12px rgba(0,0,0,0.6);">Image Studio</h1>
+        <p style="margin: 0; font-size: 12px; color: #94a3b8; font-weight: 600;">100% On-Device Offline Media Suite • Zero Server Upload</p>
+    </div>
+
+    <!-- Master Suite Navigation Tabs -->
+    <div class="suite-nav-container">
+        <button type="button" class="suite-nav-btn active" id="navImageBtn">
+            <span>🖼️</span> Image Studio
+        </button>
+        <button type="button" class="suite-nav-btn" id="navVideoBtn">
+            <span>🎬</span> Video Compressor
+        </button>
+    </div>
+
+    <!-- ========================================================
+         🖼️ SECTION 1: IMAGE STUDIO (Merger, Crop, Watermark, Compress)
+         ======================================================== -->
+    <div id="sectionImages">
+        <div class="global-switch-box">
+            <input type="checkbox" id="globalAutoFitCheck" checked>
+            <label for="globalAutoFitCheck">Auto Full-Fit Crop on Upload</label>
+        </div>
+
+        <div class="mode-container">
+            <div class="mode-btn-toggle active" id="modeMerger" onclick="switchAppMode('merger')">Studio Merger</div>
+            <div class="mode-btn-toggle" id="modeSingle" onclick="switchAppMode('single')">Single Photo</div>
+        </div>
+
+        <h2>Image Merger & Compressor</h2>
+
+        <button class="btn-swap" id="swapBtn">⇄ Swap Image Positions</button>
+
+        <div class="upload-section">
+            <div class="img-box" id="imgBox1">
+                <strong>Image 1 Layer</strong>
+                <p style="margin:4px 0; font-size:11px; color:#94a3b8; font-weight:600;">Drag & Drop / Paste or Click Below</p>
+                <button type="button" class="select-btn" onclick="triggerFileInput(1)">Choose Photo</button>
+                <input type="file" id="file1" accept="image/*" style="display:none;">
+                
+                <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+                    <button class="btn-action" onclick="rotateImage(1)">↻ Rotate 90°</button>
+                    <button type="button" class="btn-watermark-trigger" id="wmBtn1" style="display:none;" onclick="openWatermarkWindow(1)">📝 Add Watermark</button>
+                </div>
+
+                <div class="workspace-wrapper" id="wrapper1">
+                    <div class="canvas-container" id="canvasContainer1">
+                        <canvas id="canvas1" class="workspace-canvas"></canvas>
+                        <div class="shadow-overlay-container"><div id="shadowBox1" class="shadow-box-mask"></div></div>
+                        <div class="main-live-text-overlay" id="mainLiveText1"></div>
+                        <div id="grid1" class="crop-grid" data-index="1" style="display:none;">
+                            <div class="grid-lines"></div>
+                            <div class="handle corner tl" data-handle="tl"></div>
+                            <div class="handle corner tr" data-handle="tr"></div>
+                            <div class="handle corner bl" data-handle="bl"></div>
+                            <div class="handle corner br" data-handle="br"></div>
+                            <div class="handle edge-h t" data-handle="t"></div>
+                            <div class="handle edge-h b" data-handle="b"></div>
+                            <div class="handle edge-v l" data-handle="l"></div>
+                            <div class="handle edge-v r" data-handle="r"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="img-box" id="imgBox2">
+                <strong>Image 2 Layer</strong>
+                <p style="margin:4px 0; font-size:11px; color:#94a3b8; font-weight:600;">Drag & Drop / Paste or Click Below</p>
+                <button type="button" class="select-btn" onclick="triggerFileInput(2)">Choose Photo</button>
+                <input type="file" id="file2" accept="image/*" style="display:none;">
+                
+                <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+                    <button class="btn-action" onclick="rotateImage(2)">↻ Rotate 90°</button>
+                    <button type="button" class="btn-watermark-trigger" id="wmBtn2" style="display:none;" onclick="openWatermarkWindow(2)">📝 Add Watermark</button>
+                </div>
+
+                <div class="workspace-wrapper" id="wrapper2">
+                    <div class="canvas-container" id="canvasContainer2">
+                        <canvas id="canvas2" class="workspace-canvas"></canvas>
+                        <div class="shadow-overlay-container"><div id="shadowBox2" class="shadow-box-mask"></div></div>
+                        <div class="main-live-text-overlay" id="mainLiveText2"></div>
+                        <div id="grid2" class="crop-grid" data-index="2" style="display:none;">
+                            <div class="grid-lines"></div>
+                            <div class="handle corner tl" data-handle="tl"></div>
+                            <div class="handle corner tr" data-handle="tr"></div>
+                            <div class="handle corner bl" data-handle="bl"></div>
+                            <div class="handle corner br" data-handle="br"></div>
+                            <div class="handle edge-h t" data-handle="t"></div>
+                            <div class="handle edge-h b" data-handle="b"></div>
+                            <div class="handle edge-v l" data-handle="l"></div>
+                            <div class="handle edge-v r" data-handle="r"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group" id="mergeLayoutGroup" style="max-width: 350px; margin: 0 auto 15px auto;">
+            <label for="mergeMode" style="text-align: center; display: block; font-size:14px; color:#cbd5e1;"><strong>Merge Alignment:</strong></label>
+            <select id="mergeMode" onchange="mergeAndPreview()" style="font-weight:700;">
+                <option value="side">Side-by-Side (Left / Right)</option>
+                <option value="stack">Stacked (Top / Bottom)</option>
+            </select>
+        </div>
+
+        <button class="btn-primary" id="compileBtn" onclick="mergeAndPreview()">Compile & Merge Images</button>
+
+        <div class="preview-container" id="previewBlock">
+            <h3 style="color:#f8fafc;">Final Output Preview</h3>
+            <img id="previewImg" alt="Merged Crop Final Result">
+            <div class="info" id="infoStats"></div>
+            
+            <div class="compression-box">
+                <h3 style="color:#10b981; margin-top:0; font-size: 1.1rem;">Target Output Size</h3>
+                <div class="target-size-unit-box" style="display:flex; gap:8px;">
+                    <input type="number" id="targetSize" placeholder="Value (e.g. 500)" style="flex: 1; margin:0;">
+                    <select id="targetUnit" style="width: 80px; margin:0;">
+                        <option value="KB">KB</option>
+                        <option value="MB">MB</option>
+                    </select>
+                    <input type="button" class="btn-primary" onclick="processDownloadFlow(true)" style="width: auto; padding:10px 14px; margin-top:0;" value="Apply">
+                </div>
+            </div>
+
+            <div class="download-zone">
+                <button class="btn-secondary" onclick="processDownloadFlow(false)">Download Original</button>
+                <button class="btn-success" id="compressedDownloadBtn" style="display:none; background: #6366f1;">Download Resized</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         🎬 SECTION 2: VIDEO COMPRESSOR (Hardware Accelerated)
+         ======================================================== -->
+    <div id="sectionVideos" class="video-section">
+        <!-- Privacy & Hardware Badges -->
+        <div class="privacy-badge-bar">
+            <div class="privacy-pill offline">
+                <span>🛡️</span> 100% On-Device & Offline
+            </div>
+            <div class="privacy-pill hardware" id="hwPill">
+                <span id="hwPillText">⚡ GPU Hardware VPU Active</span>
+            </div>
+            <div class="privacy-pill">
+                <span>🔒</span> Zero Telemetry
+            </div>
+        </div>
+
+        <h2>Video Compressor</h2>
+
+        <!-- Upload Dropzone -->
+        <div class="video-dropzone" id="videoDropzone" onclick="triggerVideoInput()">
+            <span class="video-dropzone-icon">📹</span>
+            <h4>Select or Drop Video to Compress</h4>
+            <p>Direct camera MP4, MOV, WebM or MKV recordings up to several GBs</p>
+            <div class="video-dropzone-actions" onclick="event.stopPropagation()">
+                <button type="button" class="btn-video-browse" onclick="triggerVideoInput()">Browse Video File</button>
+                <button type="button" class="btn-demo-test" id="btnDemoTest" onclick="triggerDemoVideo()">🎬 Try Sample Demo Video</button>
+            </div>
+            <input type="file" id="videoFileInput" accept="video/*" style="display:none;">
+        </div>
+
+        <!-- Video Info Card (Hidden initially) -->
+        <div class="video-info-card" id="videoInfoCard" style="display:none;">
+            <img class="video-thumb-preview" id="videoThumbImg" alt="Video Thumbnail">
+            <div class="video-meta-details">
+                <div class="video-meta-title" id="videoMetaTitle">recording.mp4</div>
+                <div class="video-meta-chips">
+                    <span class="video-chip size-badge" id="videoChipSize">0 MB</span>
+                    <span class="video-chip" id="videoChipDuration">00:00</span>
+                    <span class="video-chip" id="videoChipRes">1920 × 1080</span>
+                    <span class="video-chip" id="videoChipFps">30 FPS</span>
+                </div>
+            </div>
+            <button type="button" class="btn-change-video" onclick="resetVideoSelection()">Change</button>
+        </div>
+
+        <!-- Video Compression Configuration Block (Hidden initially) -->
+        <div id="videoConfigBlock" style="display:none;">
+            <label style="font-size: 13px; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 8px;">Select Compression Preset:</label>
+            <div class="preset-grid">
+                <!-- Preset 1: Smart Auto -->
+                <div class="preset-card active" data-preset="auto" onclick="selectVideoPreset('auto')">
+                    <div class="preset-tag">Smart</div>
+                    <div class="preset-title">⚡ Smart Auto</div>
+                    <div class="preset-desc">Optimal balance for sharing. Sharp 720p with 90%+ space savings.</div>
+                    <div class="preset-specs">720p HD • ~380 kbps • AAC Audio</div>
+                </div>
+
+                <!-- Preset 2: Ultra Space Saver -->
+                <div class="preset-card" data-preset="ultra" onclick="selectVideoPreset('ultra')">
+                    <div class="preset-tag" style="color:#34d399; background:rgba(52,211,153,0.2);">Tiny</div>
+                    <div class="preset-title">📦 Ultra Saver</div>
+                    <div class="preset-desc">Maximum compression for weak networks. Compact 480p cinema rate.</div>
+                    <div class="preset-specs">480p • 24 FPS • ~180 kbps</div>
+                </div>
+
+                <!-- Preset 3: Balanced -->
+                <div class="preset-card" data-preset="balanced" onclick="selectVideoPreset('balanced')">
+                    <div class="preset-title">⚖️ Balanced</div>
+                    <div class="preset-desc">Crisp 720p HD with smooth motion. Great for presentations & stories.</div>
+                    <div class="preset-specs">720p HD • 30 FPS • ~450 kbps</div>
+                </div>
+
+                <!-- Preset 4: High Quality -->
+                <div class="preset-card" data-preset="high" onclick="selectVideoPreset('high')">
+                    <div class="preset-title">✨ High Quality</div>
+                    <div class="preset-desc">Full 1080p FHD clarity with moderate savings for archiving.</div>
+                    <div class="preset-specs">1080p FHD • 30 FPS • ~1.0 Mbps</div>
+                </div>
+
+                <!-- Preset 5: Custom -->
+                <div class="preset-card" data-preset="custom" onclick="selectVideoPreset('custom')">
+                    <div class="preset-title">⚙️ Custom Settings</div>
+                    <div class="preset-desc">Manual control over bitrate, resolution, framerate, and audio channels.</div>
+                    <div class="preset-specs">Fully Configurable</div>
+                </div>
+
+                <!-- Preset 6: Target Size -->
+                <div class="preset-card" data-preset="target-size" onclick="selectVideoPreset('target-size')">
+                    <div class="preset-title">🎯 Target Size</div>
+                    <div class="preset-desc">Target an exact megabyte limit (e.g. 10 MB for Discord/Email).</div>
+                    <div class="preset-specs">Auto Bitrate Math</div>
+                </div>
+            </div>
+
+            <!-- Target Size Slider Panel -->
+            <div class="target-size-card" id="targetSizeCard">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label style="font-size:13px; font-weight:800; color:#38bdf8;">🎯 Target File Size:</label>
+                    <span id="targetSizeDisplay" style="font-weight:900; font-size:15px; color:#38bdf8;">10 MB</span>
+                </div>
+                <div class="slider-container" style="margin-bottom:0;">
+                    <input type="range" id="targetSizeSlider" min="2" max="100" value="10" oninput="syncTargetSliderUI()">
+                </div>
+                <p style="font-size:11px; color:#94a3b8; margin:6px 0 0 0;">Engine calculates the exact audio/video bitrate to strictly stay under this limit.</p>
+            </div>
+
+            <!-- Custom Settings Panel (Opened when Custom preset selected) -->
+            <div class="custom-settings-panel" id="customSettingsPanel">
+                <h4 style="margin:0 0 12px 0; color:#38bdf8; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">Custom Configuration</h4>
+                
+                <div class="control-group">
+                    <label>Target Resolution:</label>
+                    <div class="chips-row">
+                        <button type="button" class="chip-btn active" onclick="selectCustomChip('res', 'auto', this)">Auto (Keep Ratio)</button>
+                        <button type="button" class="chip-btn" onclick="selectCustomChip('res', '1080p', this)">1080p (FHD)</button>
+                        <button type="button" class="chip-btn" onclick="selectCustomChip('res', '720p', this)">720p (HD)</button>
+                        <button type="button" class="chip-btn" onclick="selectCustomChip('res', '540p', this)">540p (qHD)</button>
+                        <button type="button" class="chip-btn" onclick="selectCustomChip('res', '480p', this)">480p (SD)</button>
+                        <button type="button" class="chip-btn" onclick="selectCustomChip('res', '360p', this)">360p (Low)</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Video Bitrate (kbps):</label>
+                    <div class="slider-container">
+                        <input type="range" id="customBitrateSlider" min="100" max="4000" step="50" value="350" oninput="syncCustomBitrate(this.value)">
+                        <input type="number" id="customBitrateNum" min="100" max="4000" step="50" value="350" class="slider-val-box" oninput="syncCustomBitrate(this.value)">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Target Framerate (FPS):</label>
+                    <div class="chips-row">
+                        <button type="button" class="chip-btn active" onclick="selectCustomChip('fps', 'auto', this)">Auto (Keep)</button>
+                        <button type="button" class="chip-btn" onclick="selectCustomChip('fps', '60', this)">60 FPS</button>
+                        <button type="button" class="chip-btn" onclick="selectCustomChip('fps', '30', this)">30 FPS</button>
+                        <button type="button" class="chip-btn" onclick="selectCustomChip('fps', '24', this)">24 FPS (Cinema)</button>
+                    </div>
+                </div>
+
+                <div class="control-group" style="margin-bottom:0;">
+                    <label>Audio Stream Bitrate:</label>
+                    <div class="chips-row" style="margin-bottom:0;">
+                        <button type="button" class="chip-btn" onclick="selectCustomChip('audio', '96000', this)">96 kbps (Studio)</button>
+                        <button type="button" class="chip-btn active" onclick="selectCustomChip('audio', '64000', this)">64 kbps (Crisp)</button>
+                        <button type="button" class="chip-btn" onclick="selectCustomChip('audio', '48000', this)">48 kbps (Balanced)</button>
+                        <button type="button" class="chip-btn" onclick="selectCustomChip('audio', '32000', this)">32 kbps (Speech)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Live Estimation Bar -->
+            <div class="estimate-banner">
+                <div class="estimate-stat">
+                    <span class="estimate-label">Estimated Output Size</span>
+                    <span class="estimate-val" id="estOutputSize">~0 MB</span>
+                </div>
+                <div class="estimate-stat" style="text-align:right;">
+                    <span class="estimate-label">Estimated Savings</span>
+                    <span class="estimate-val saving-val" id="estSavings">-0%</span>
+                </div>
+            </div>
+
+            <!-- Compress Action Button -->
+            <button type="button" class="btn-compress-action" id="btnCompressVideo" onclick="startVideoCompression()">
+                ⚡ Compress Video Now
+            </button>
+        </div>
+
+        <!-- Video Result Card (Hidden until complete) -->
+        <div class="video-result-card" id="videoResultCard">
+            <div class="video-result-header">
+                <span>🎉</span>
+                <h3>Compression Completed Successfully!</h3>
+            </div>
+            
+            <video class="video-player-preview" id="videoResultPlayer" controls playsinline></video>
+
+            <div class="result-comparison-table">
+                <div class="result-comp-item">
+                    <span>Original Size</span>
+                    <span id="resOrigSize">0 MB</span>
+                </div>
+                <div class="result-comp-item">
+                    <span>Compressed Size</span>
+                    <span id="resCompSize" style="color:#38bdf8;">0 MB</span>
+                </div>
+                <div class="result-comp-item savings">
+                    <span>Space Saved</span>
+                    <span id="resSavings">0%</span>
+                </div>
+            </div>
+
+            <button type="button" class="btn-download-video" onclick="downloadCompressedVideo()">
+                ⬇️ Download Compressed Video
+            </button>
+            <p style="text-align:center; font-size:11px; color:#94a3b8; margin:4px 0 0 0;">Output format: <code>&lt;original_name&gt;-1.mp4</code></p>
+        </div>
+    </div>
+
+</div>
+
+<!-- ========================================================
+     ⚙️ ADVANCED CONTROLS SIDE MENU (Image Tools)
+     ======================================================== -->
+<div class="menu-container">
+    <button class="menu-btn" onclick="toggleSideMenu(event)">☰</button>
+    <div class="side-menu" id="sideMenu">
+        <h4 style="margin: 0 0 12px 0; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; color:#10b981;">⚙️ Advanced Controls</h4>
+        <div class="control-group">
+            <label for="aspectRatio">Grid Aspect Ratio</label>
+            <select id="aspectRatio" onchange="applyAspectRatioPreset()">
+                <option value="free">Freeform (Manual Drag)</option>
+                <option value="1:1">1:1 (Square Size)</option>
+                <option value="4:3">4:3 (Standard Photo)</option>
+                <option value="16:9">16:9 (HD Landscape)</option>
+                <option value="passport">3:4 (Passport Photo)</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="defaultFormat">Default Saved Format</label>
+            <select id="defaultFormat" onchange="updateDefaultFormatChoice()">
+                <option value="ask">Always Ask Choice</option>
+                <option value="image/jpeg">JPEG (.jpg)</option>
+                <option value="image/png">PNG (.png)</option>
+                <option value="image/webp">WebP (.webp)</option>
+            </select>
+        </div>
+        
+        <div class="color-picker-box" id="mainMenuColorBox">
+            <div class="color-picker-header" onclick="toggleAccordion('mainMenuColorBox')">
+                <span>🎨 Set Padding Color</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="color-picker-content">
+                <div class="control-group" id="sideMenuBorderColor" style="margin-bottom:0;">
+                    <div class="color-swatch-grid" id="borderSwatches"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group" id="sideMenuBorderThickness" style="margin-top: 10px;">
+            <label>Separator Thickness (px)</label>
+            <input type="range" id="borderThicknessSlider" min="0" max="50" step="0.1" value="5" oninput="syncThicknessValues('slider')">
+            <div class="thickness-input-container">
+                <input type="number" id="borderThicknessNum" min="0" max="50" step="0.1" value="5.0" oninput="syncThicknessValues('num')">
+                <span style="font-size: 12px; color: #94a3b8; font-weight:700;">Pixels (.0)</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     📝 WATERMARK MODAL
+     ======================================================== -->
+<div class="wm-modal-overlay" id="wmModal">
+    <div class="wm-modal-box" id="wmModalBoxNode">
+        <h3 id="wmModalTitle">Custom Watermark</h3>
+        
+        <div class="wm-real-viewport-preview" id="wmViewportContainer">
+            <img class="wm-viewport-image" id="wmViewportTargetImg" alt="Viewport Render Base">
+            <div class="wm-movable-text-node" id="wmMovableText">Watermark Pro</div>
+        </div>
+
+        <div class="control-group">
+            <label>Watermark Text:</label>
+            <input type="text" id="modalWmText" placeholder="Type text overlay here..." oninput="updateModalLivePreviewUI()">
+        </div>
+
+        <div class="control-group">
+            <label>Font Face Style:</label>
+            <select id="modalWmFont" onchange="updateModalLivePreviewUI()">
+                <option value="Arial" style="font-family:Arial;">Arial (Standard Clean)</option>
+                <option value="Impact" style="font-family:Impact; font-size:16px;">Impact (Meme Bold)</option>
+                <option value="Georgia" style="font-family:Georgia;">Georgia (Classic Serif)</option>
+                <option value="Courier New" style="font-family:'Courier New';">Courier New (Console)</option>
+                <option value="cursive" style="font-family:cursive;">Signature Cursive</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Font Scaling Size (px):</label>
+            <input type="range" id="modalWmSizeSlider" min="12" max="200" value="45" onpointerdown="document.getElementById('modalWmText').blur()" oninput="document.getElementById('modalWmSizeNum').value = this.value; updateModalLivePreviewUI();">
+            <input type="number" id="modalWmSizeNum" min="12" max="200" value="45" onchange="document.getElementById('modalWmSizeSlider').value = this.value; updateModalLivePreviewUI();" style="width:70px;">
+        </div>
+
+        <div class="color-picker-box" id="wmColorBox">
+            <div class="color-picker-header" onpointerdown="document.getElementById('modalWmText').blur()" onclick="toggleAccordion('wmColorBox')">
+                <span>🎨 Background & Text Colors</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="color-picker-content">
+                <div class="control-group" style="margin-bottom: 8px;">
+                    <label>Text Background Ribbon (Optional):</label>
+                    <select id="modalWmBgChoice" onchange="updateModalLivePreviewUI()">
+                        <option value="none">None (Transparent Back)</option>
+                        <option value="rgba(0,0,0,0.85)">Solid Matte Black</option>
+                        <option value="rgba(255,255,255,0.95)">Solid Plain White</option>
+                        <option value="rgba(239,68,68,0.9)">Vibrant Solid Red</option>
+                    </select>
+                </div>
+                <div class="control-group" style="margin-bottom:0;">
+                    <label>Text Color Swatch:</label>
+                    <div class="color-swatch-grid" id="modalColorSwatches" style="margin-top:0;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="wm-modal-actions">
+            <button type="button" class="btn-primary" style="margin-top:0;" onclick="saveAndApplyWatermarkState()">Apply Watermark</button>
+            <button type="button" style="background:rgba(239, 68, 68, 0.1); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.3);" onclick="closeWatermarkWindowWithoutSaving()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     📥 FORMAT SELECTION MODAL (Image Export)
+     ======================================================== -->
+<div class="modal-overlay" id="formatModal">
+    <div class="modal-box">
+        <h3 style="color:#10b981;">Select Export Format</h3>
+        <select id="modalFormatChoice">
+            <option value="image/jpeg">JPEG (.jpg)</option>
+            <option value="image/png">PNG (.png)</option>
+            <option value="image/webp">WebP (.webp)</option>
+        </select>
+        <div style="margin: 15px 0; text-align:left; display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="keepChoiceCheck" style="width:16px; height:16px; margin:0;">
+            <label for="keepChoiceCheck" style="font-size:13px; color:#cbd5e1; font-weight:bold;">Keep choice (Don't ask again)</label>
+        </div>
+        <button class="btn-primary" onclick="confirmFormatModalSelection()" style="margin:0;">Confirm Download</button>
+    </div>
+</div>
+
+<!-- ========================================================
+     ⚡ VIDEO PROGRESS MODAL
+     ======================================================== -->
+<div class="modal-overlay" id="videoProgressModal" style="display:none;">
+    <div class="progress-modal-box">
+        <h3 style="color:#38bdf8; margin:0 0 4px 0;">Compressing Video...</h3>
+        <p style="font-size:12px; color:#94a3b8; margin:0;" id="progressStatus">Initializing WebCodecs & Hardware VPU...</p>
+        
+        <!-- Circular SVG Progress Indicator -->
+        <div class="progress-circle-wrap">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+                <circle class="progress-circle-bg" cx="70" cy="70" r="58"></circle>
+                <circle class="progress-circle-bar" id="progressCircleBar" cx="70" cy="70" r="58"></circle>
+            </svg>
+            <div class="progress-percent-label" id="progressPercentLabel">0%</div>
+        </div>
+
+        <div class="progress-stats-grid">
+            <div class="progress-stat-item">
+                <span>Encoding Speed:</span>
+                <span id="progressSpeed">1.0x</span>
+            </div>
+            <div class="progress-stat-item">
+                <span>Time Remaining:</span>
+                <span id="progressEta">Estimating...</span>
+            </div>
+        </div>
+
+        <button type="button" class="btn-cancel-compression" onclick="cancelCurrentCompression()">
+            ✖ Cancel Compression
+        </button>
+    </div>
+</div>
+
+<!-- Modular JavaScript Files -->
+<script src="js/state.js"></script>
+<script src="js/ui-controls.js"></script>
+<script src="js/workspace-crop.js"></script>
+<script src="js/watermark.js"></script>
+<script src="js/merger-compressor.js"></script>
+<script src="js/video-engine.bundle.js"></script>
+<script src="js/video-ui.js"></script>
+
+</body>
+</html>

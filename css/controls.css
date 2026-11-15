@@ -1,0 +1,110 @@
+/* ========================================================
+   🌟 CONTROLS, BUTTONS, INPUTS, SIDE MENU & SWATCHES
+   ======================================================== */
+.global-switch-box {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: 10px; padding: 10px; margin-bottom: 12px;
+    font-size: 13px; font-weight: 700; color: #cbd5e1;
+    border: 1px dashed rgba(255,255,255,0.1);
+    box-shadow: inset 2px 2px 6px rgba(0,0,0,0.3);
+    user-select: none;
+}
+.global-switch-box input[type="checkbox"] { width: 16px; height: 16px; accent-color: #10b981; cursor: pointer; }
+
+.mode-container {
+    display: flex; justify-content: center;
+    background: rgba(15, 23, 42, 0.8);
+    border-radius: 12px; padding: 5px; margin-bottom: 20px;
+    box-shadow: inset 3px 3px 8px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.mode-btn-toggle {
+    flex: 1; padding: 10px; text-align: center; cursor: pointer;
+    font-weight: 800; font-size: 13px; border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #94a3b8;
+}
+.mode-btn-toggle.active {
+    background: #10b981; color: #ffffff;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.menu-container { position: fixed; top: 12px; left: 12px; z-index: 1000; }
+.menu-btn {
+    background: rgba(15, 23, 42, 0.9) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #10b981 !important;
+    font-size: 20px; width: 44px; height: 44px;
+    display: flex; justify-content: center; align-items: center;
+    border-radius: 50%; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    transition: transform 0.2s;
+}
+.menu-btn:hover { transform: scale(1.05); background: #1e293b !important; }
+
+.side-menu {
+    position: absolute; top: 55px; left: 0; width: 290px;
+    background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px;
+    padding: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    display: none; max-height: 85vh; overflow-y: auto; color: #f1f5f9;
+}
+
+button {
+    width: 100%; padding: 10px; border: none; border-radius: 8px; box-sizing: border-box; 
+    cursor: pointer; font-size: 13px; font-weight: bold; transition: all 0.2s;
+}
+button:active { transform: scale(0.97); }
+
+.select-btn {
+    background: rgba(255, 255, 255, 0.1); color: #f8fafc;
+    border: 1px solid rgba(255, 255, 255, 0.2); padding: 8px 16px; border-radius: 8px;
+    display: inline-block; margin: 8px auto;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+.select-btn:hover { background: rgba(255, 255, 255, 0.15); border-color: #10b981; }
+
+.btn-action { background: rgba(255, 255, 255, 0.08); color: #e2e8f0; margin-top: 6px; width: auto; padding: 8px 14px; display: inline-block; border: 1px solid rgba(255,255,255,0.1); }
+.btn-watermark-trigger { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; margin-top: 6px; width: auto; padding: 8px 14px; display: inline-block; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4); border-radius: 8px;}
+.btn-swap { background: linear-gradient(135deg, #f59e0b, #ea580c) !important; color: white; margin-bottom: 20px; font-size: 14px; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4); border-radius: 10px; padding: 12px;}
+.btn-primary { background: linear-gradient(135deg, #10b981, #059669); color: white; margin-top: 15px; font-size: 15px; padding: 14px; border-radius: 10px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);}
+.btn-success { background: #3b82f6; color: white; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4); padding: 10px;}
+.btn-secondary { background: #475569; margin-top: 10px; color: white; padding: 10px;}
+
+input[type="file"], input[type="number"], select, input[type="text"] {
+    width: 100%; padding: 10px;
+    background: rgba(15, 23, 42, 0.8); color: #f8fafc;
+    border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; box-sizing: border-box;
+    margin-top: 4px; margin-bottom: 8px; font-size: 13px; font-weight: 600;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5); outline: none;
+}
+select option { background: #1e293b; color: #f8fafc; }
+
+.control-group { display: flex; flex-direction: column; margin-bottom: 12px; }
+.control-group label { font-size: 12px; font-weight: 700; margin-bottom: 4px; color: #94a3b8; }
+
+.color-picker-box {
+    background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px; margin-top: 5px; margin-bottom: 10px;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3); overflow: hidden; 
+}
+.color-picker-header {
+    padding: 12px; font-size: 12px; color: #3b82f6; 
+    text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; user-select: none; background: rgba(255,255,255,0.03); transition: background 0.2s;
+}
+.color-picker-header:hover { background: rgba(255,255,255,0.08); }
+.color-picker-header span.arrow { transition: transform 0.3s; font-size: 10px; }
+.color-picker-content { padding: 0 12px 12px 12px; display: none; }
+.color-picker-box.open .color-picker-content { display: block; }
+.color-picker-box.open .color-picker-header span.arrow { transform: rotate(180deg); }
+
+.color-swatch-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 4px; }
+.swatch-circle { aspect-ratio: 1; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.2); transition: transform 0.2s, box-shadow 0.2s; }
+.swatch-circle.active { border-color: #10b981; transform: scale(1.15); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); }
+
+.thickness-input-container { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+.thickness-input-container input[type="number"] { width: 70px; margin: 0; padding: 8px; text-align: center; }

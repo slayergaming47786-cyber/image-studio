@@ -1,0 +1,58 @@
+/* ========================================================
+   🌟 WORKSPACE, UPLOAD CARDS & CROP LAYER
+   ======================================================== */
+.upload-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 20px; }
+.img-box {
+    background: rgba(30, 41, 59, 0.5); padding: 15px; border-radius: 14px;
+    text-align: center; border: 2px dashed rgba(255, 255, 255, 0.15);
+    box-shadow: inset 2px 2px 10px rgba(0,0,0,0.3);
+    transition: border-color 0.2s, background-color 0.2s;
+}
+.img-box.dragover { border-color: #10b981; background: rgba(16, 185, 129, 0.15); }
+.img-box strong { font-size: 15px; color: #f8fafc; }
+
+.workspace-wrapper {
+    position: relative; width: 100%; margin-top: 15px;
+    background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; text-align: center; padding: 10px 0; 
+    display: none; box-shadow: inset 0 4px 10px rgba(0,0,0,0.8);
+    touch-action: auto !important; 
+}
+.canvas-container { position: relative; display: inline-block; max-width: 100%; vertical-align: middle; }
+.workspace-canvas { display: block; max-width: 100%; max-height: 50vh; width: auto; height: auto; pointer-events: none; border-radius: 4px; }
+
+.shadow-overlay-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 5; border-radius: 4px; }
+.shadow-box-mask { position: absolute; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75); border-radius: 2px; pointer-events: none; }
+
+.crop-grid {
+    position: absolute; border: 2px solid #10b981; cursor: move; box-sizing: border-box; z-index: 10;
+    background: transparent; touch-action: none !important; will-change: left, top, width, height;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+.main-live-text-overlay {
+    position: absolute; font-weight: bold; white-space: nowrap; pointer-events: none; z-index: 25;
+    transform: translate(-50%, -50%); text-shadow: 0 2px 5px rgba(0,0,0,0.8); display: none; padding: 2px 6px; border-radius: 4px; text-align: center;
+}
+
+.grid-lines { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; }
+.grid-lines::before, .grid-lines::after { content: ''; position: absolute; }
+.grid-lines::before { top: 33.33%; bottom: 33.33%; left: 0; right: 0; border-top: 1px dashed rgba(255, 255, 255, 0.5); border-bottom: 1px dashed rgba(255, 255, 255, 0.5); }
+.grid-lines::after { left: 33.33%; right: 33.33%; top: 0; bottom: 0; border-left: 1px dashed rgba(255, 255, 255, 0.5); border-right: 1px dashed rgba(255, 255, 255, 0.5); }
+
+.handle { position: absolute; box-sizing: border-box; z-index: 30; touch-action: none; }
+.handle::after { content: ''; position: absolute; top: 50%; left: 50%; width: 50px; height: 50px; transform: translate(-50%, -50%); background: transparent; }
+
+.handle.corner { width: 14px; height: 14px; background: #fff; border: 3px solid #10b981; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+.handle.tl { top: -7px; left: -7px; cursor: nwse-resize; }
+.handle.tr { top: -7px; right: -7px; cursor: nesw-resize; }
+.handle.bl { bottom: -7px; left: -7px; cursor: nesw-resize; }
+.handle.br { bottom: -7px; right: -7px; cursor: nwse-resize; }
+.handle.edge-h { width: 30px; height: 6px; background: #fff; border: 2px solid #10b981; transform: translateX(-50%); left: 50%; border-radius: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+.handle.edge-v { width: 6px; height: 30px; background: #fff; border: 2px solid #10b981; transform: translateY(-50%); top: 50%; border-radius: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+.handle.edge-h::after { width: 100px; height: 50px; }
+.handle.edge-v::after { width: 50px; height: 100px; }
+.handle.t { top: -3px; cursor: n-resize; }
+.handle.b { bottom: -3px; cursor: s-resize; }
+.handle.l { left: -3px; cursor: w-resize; }
+.handle.r { right: -3px; cursor: e-resize; }
